@@ -118,5 +118,3 @@ cur:
 	.skip 4, 0
 end:
 	.skip 4, 0
-sz:
-	.int 0

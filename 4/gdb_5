@@ -1,0 +1,7 @@
+b 4.S : 46
+b 4.S : 28
+r
+display $eax
+display $ecx
+c
+c

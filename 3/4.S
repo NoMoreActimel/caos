@@ -40,9 +40,7 @@ print_str:
 	.global main, cnt_lines, cnt_words, cnt_chars
 main:
 	// ebx - bool(is a word-char)
-	// edi - pointer to the cur elem
 	mov $0, %ebx
-	mov $string, %edi
 
 loop:
 	sub $BUF_SIZE, %esp	
@@ -106,8 +104,6 @@ fail:
 	int $0x80
 
 	.data
-string:
-	.skip 1
 cnt_lines:
 	.int 0
 cnt_words:

@@ -37,55 +37,48 @@ print_str:
 	pop %ebp
 	ret
 
-	.global main
-main:
-	mov $0, %ebx
+next_byte:
+	push %ebp
+	mov %esp, %ebp
 
-loop_read:
-	sub $BUF_SIZE, %esp	
-	mov %esp, %esi
-	push $BUF_SIZE
+	push $1
 	push %esi
 	call read_str
 	add $8, %esp
 
-loop:
+	mov %ebp, %esp
+	pop %ebp
+	ret
 
-	xor %eax, %eax
-	movb (%esi), %al
 
+	.global main
+main:
+	mov $0, %edi
+	sub $1, %esp	
+	mov %esp, %esi
+
+next_char:
+	call next_byte
 	test %eax, %eax
 	jz exit
 
-	cmp $0b11110000, %al
-	jae utf8_4
-	cmp $0b11100000, %al
-	jae utf8_3
-	cmp $0b11000000, %al
-	jae utf8_2
+	xor %ebx, %ebx
+	movb (%esi), %bl
 
-utf8_1:
-	add $1, %esi
-	inc %ebx
-	jmp loop
+	inc %edi
+	shl $1, %bl
+	jc loop_cur_char
+	jmp next_char
+	
+loop_cur_char:
+	shl $1, %bl
+	jnc next_char
+	call next_byte
+	jmp loop_cur_char
 
-utf8_2:
-	add $2, %esi
-	inc %ebx
-	jmp loop
-
-utf8_3:
-	add $3, %esi
-	inc %ebx
-	jmp loop
-
-utf8_4:
-	add $4, %esi
-	inc %ebx
-	jmp loop
 
 exit:
-	mov %ebx, %eax
+	mov %edi, %eax
 	call writei32
 
 	mov $SYS_EXIT, %eax
