@@ -1,8 +1,8 @@
-// #include <stdio.h>
+#include <stdio.h>
 
 int mystrcmp(const char* str1, const char* str2) {
-	char* p1 = str1;
-	char* p2 = str2;
+	unsigned char* p1 = (unsigned char*)str1;
+	unsigned char* p2 = (unsigned char*)str2;
 
 	while (*p1 != '\0' || *p2 != '\0') {
 		if (*p1 == '\0') {
@@ -23,10 +23,10 @@ int mystrcmp(const char* str1, const char* str2) {
 	return 0;
 }
 
-/*
+
 int main() {
-	char str1[] = "am i?";
+	char str1[] = "am i";
 	char str2[] = "am i shure i am?";
 
 	printf("%d\n", mystrcmp(str1, str2));
-}*/
+}
