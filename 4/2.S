@@ -9,9 +9,9 @@ free_mem:
 	jz exit
 
 	mov freelist, %eax // prev head in eax
-	mov -4(%ecx), %edx // block size-field address in edx
-	mov %edx, freelist // now in freelist
 	mov %eax, (%ecx) // next is prev head
+	sub $4, %ecx
+	mov %ecx, freelist // now in freelist
 
 exit:
 	mov %ebp, %esp
