@@ -1,73 +1,71 @@
-#include <unistd.h>
 #include <stdio.h>
-#include <stdlib.h>       
-#include <fcntl.h>
+#include <stdlib.h>
 
 typedef struct {
-	char* data;
-	size_t size;
-	size_t used_size;
+    char* data;
+    size_t size;
+    size_t used_size;
 } DynamicString;
 
 void initDynamicString(DynamicString* str, size_t size) {
-	str->data = malloc(size * sizeof(char));
-	str->size = size;
-	str->used_size = 0;
+    str->data = malloc(size * sizeof(char));
+    str->size = size;
+    str->used_size = 0;
 }
 
 void freeDynamicString(DynamicString* str) {
-	free(str->data);
-	str->data = NULL;
-	str->size = 0;
-	str->used_size = 0;
+    free(str->data);
+    str->data = NULL;
+    str->size = 0;
+    str->used_size = 0;
 }
 
 void addCharDynamicString(DynamicString* str, char c) {
-	if (str->used_size == str->size) {
-		str->size *= 2;
-		char* new_data = realloc(str->data, str->size * sizeof(char));
+    if (str->used_size == str->size) {
+        str->size *= 2;
+        char* new_data = realloc(str->data, str->size * sizeof(char));
 
-		if (new_data != NULL) {
-			str->data = new_data;
-		} else {
-			freeDynamicString(str);
-		}
-	}
+        if (new_data != NULL) {
+            str->data = new_data;
+        } else {
+            freeDynamicString(str);
+        }
+    }
 
-	str->data[str->used_size] = c;
-	++str->used_size;
+    str->data[str->used_size] = c;
+    ++str->used_size;
 }
 
 char* getline2(FILE* f) {
-	DynamicString str;
-	char cur = 1;
+    DynamicString str;
+    int cur = 1;
 
-	if (fscanf(f, "%c", &cur) != 1) {
-		return NULL;
-	} else {
-		initDynamicString(&str, 1);
-		addCharDynamicString(&str, cur);
-		if (str.data == NULL) {
-			return NULL;
-		}
+    if ((cur = getc(f)) == EOF) {
+        return NULL;
+    } else {
+        initDynamicString(&str, 1);
+        addCharDynamicString(&str, cur);
+        if (str.data == NULL) {
+            return NULL;
+        }
 
         if (cur == '\n') {
             addCharDynamicString(&str, '\0');
             return str.data;
         }
-	}
+    }
 
-	while (fscanf(f, "%c", &cur) == 1) {
-		addCharDynamicString(&str, cur);
-		if (str.data == NULL) {
-			return NULL;
-		}
+    while ((cur = getc(f)) != EOF) {
+        addCharDynamicString(&str, cur);
+        if (str.data == NULL) {
+            return NULL;
+        }
 
         if (cur == '\n') {
             addCharDynamicString(&str, '\0');
             return str.data;
         }
-	}
+    }
 
     addCharDynamicString(&str, '\0');
     return str.data;
@@ -84,5 +82,5 @@ int main() {
         free(str);
     }
 
-	return 0;
+    return 0;
 }*/

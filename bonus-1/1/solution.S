@@ -1,18 +1,7 @@
-	.global rop
+    .global rop
 rop:
-	push %ebp
-	mov %esp, %ebp
-	push %ebx
-
-	push string
-	call printf
-	add $4, %esp
-
-	pop %ebx
-	mov %ebp, %esp
-	pop %ebp
-	ret
-
-	.global string
-string:
-	.asciz "Hello there"
+    pushl $str2
+    pushl $f1 + 1
+    pushl $str1
+    pushl $f1 + 1
+    ret
