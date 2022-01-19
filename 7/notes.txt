@@ -1,0 +1,16 @@
+ua * ub > INT64_MAX  ->  overflow
+ua * ub <= INT64_MAX ->  no overflow
+
+if (INT64_MAX / )
+
+
+
+if (UINT64_MAX / ua > ub) {
+    if (ua * ub > (uint64_t)INT64_MAX) {
+        overflow
+    } else {
+        no overflow
+    }
+} else {
+    overflow
+}
