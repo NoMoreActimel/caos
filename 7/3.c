@@ -2,91 +2,99 @@
 #include <stdlib.h>
 
 typedef struct Node {
-	int value;
-	struct Node* left;
-	struct Node* right;
+    int value;
+    struct Node* left;
+    struct Node* right;
 } Node;
 
 Node* initNode(int value) {
-	Node* node = malloc(sizeof(Node));
-	node->value = value;
-	node->left = NULL;
-	node->right = NULL;
-	return node;
+    Node* node = malloc(sizeof(Node));
+    if (node == NULL) {
+        return NULL;
+    }
+    node->value = value;
+    node->left = NULL;
+    node->right = NULL;
+    return node;
 }
 
 void freeTree(Node* node) {
-	if (!node) {
-		return;
-	}
+    if (!node) {
+        return;
+    }
 
-	freeTree(node->left);
-	freeTree(node->right);
-	free(node);
+    freeTree(node->left);
+    freeTree(node->right);
+    free(node);
 }
 
 Node* addNodeToTree(Node* node, int value) {
-	if (node == NULL) {
-		return initNode(value);
-	}
+    if (node == NULL) {
+        return initNode(value);
+    }
 
-	if (node->value > value) {
-		if (node->left) {
-			return addNodeToTree(node->left, value);
-		} else {
-			node->left = initNode(value);
-			return node->left;
-		}
-	} else if (node->value < value) {
-		if (node->right) {
-			return addNodeToTree(node->right, value);
-		} else {
-			node->right = initNode(value);
-			return node->right;
-		}
-	}
-	return NULL;
+    if (node->value > value) {
+        if (node->left) {
+            return addNodeToTree(node->left, value);
+        } else {
+            node->left = initNode(value);
+            return node->left;
+        }
+    } else if (node->value < value) {
+        if (node->right) {
+            return addNodeToTree(node->right, value);
+        } else {
+            node->right = initNode(value);
+            return node->right;
+        }
+    }
+    return NULL;
 }
 
 void printTreePart(FILE* out, Node* node) {
-	if (!node) {
-		return;
-	}
+    if (!node) {
+        return;
+    }
 
-	printTreePart(out, node->right);
-	fprintf(out, "%d ", node->value);
-	printTreePart(out, node->left);
+    printTreePart(out, node->right);
+    fprintf(out, "%d ", node->value);
+    printTreePart(out, node->left);
 }
 void printTree(FILE* out, Node* root) {
-	printTreePart(out, root);
-	fprintf(out, "0 ");
+    printTreePart(out, root);
+    fprintf(out, "0 ");
 }
 
 int main() {
-	FILE* in = stdin; // fopen("input.txt", "r");
-	FILE* out = stdout;
+    FILE* in = stdin; // fopen("input.txt", "r");
+    FILE* out = stdout;
 
-	int value = 1;
-	Node* root = NULL;
+    int value = 1;
+    Node* root = NULL;
 
-	while (fscanf(in, "%d", &value) > 0) {
-		if (value == 0) {
-			printTree(out, root);
-			freeTree(root);
-			root = NULL;
-		} else {
-			if (!root) {
-				root = addNodeToTree(root, value);
-			} else {
-				addNodeToTree(root, value);
-			}
-		}
-	}
+    while (fscanf(in, "%d", &value) > 0) {
+        if (value == 0) {
+            printTree(out, root);
+            freeTree(root);
+            root = NULL;
+        } else {
+            if (!root) {
+                root = addNodeToTree(root, value);
+                if (root == NULL) {
+                    break;
+                }
+            } else {
+                if (addNodeToTree(root, value) == NULL) {
+                    break;
+                }
+            }
+        }
+    }
 
-	if (value && root) {
-		printTree(out, root);
-		freeTree(root);
-	}
+    if (value && root) {
+        printTree(out, root);
+        freeTree(root);
+    }
 
-	fprintf(out, "\n");
+    fprintf(out, "\n");
 }

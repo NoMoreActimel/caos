@@ -6,13 +6,13 @@ int32_t satsum(int32_t a, int32_t b) {
 
 	if (a > 0 && b > 0) {
 		if (__builtin_add_overflow(a, b, &c)) {
-			return (int32_t)((1u << 31) - 1);
+			return INT32_MAX;
 		}
 		return c;
 	} 
 	if (a < 0 && b < 0) {
 		if (__builtin_add_overflow(a, b, &c)) {
-			return 1 << 31;
+			return INT32_MIN;
 		}
 		return c;
 	}

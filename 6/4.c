@@ -8,6 +8,9 @@ typedef struct Node {
 
 Node_t* initList() {
     Node_t* head = malloc(sizeof(Node_t));
+    if (head == NULL) {
+        return NULL;
+    }
     head->value = 0;
     head->next = NULL;
     return head;
@@ -15,6 +18,9 @@ Node_t* initList() {
 
 Node_t* addNodeToList(Node_t* node, int value) {
     node->next = malloc(sizeof(Node_t));
+    if (node->next == NULL) {
+        return NULL;
+    }
     node->next->value = value;
     node->next->next = NULL;
     return node->next;
@@ -39,6 +45,9 @@ Node_t* readList() {
 
     if (scanf("%d", &value) > 0) {
         head = initList();
+        if (head == NULL) {
+            return NULL;
+        }
         node = head;
         node->value = value;
     } else {
@@ -47,6 +56,9 @@ Node_t* readList() {
 
     while (scanf("%d", &value) > 0) {
         node = addNodeToList(node, value);
+        if (node == NULL) {
+            return NULL;
+        }
     }
 
     return head;
