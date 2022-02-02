@@ -13,7 +13,7 @@ int compare (const void* element1, const void* element2) {
 }
 
 void rank_sort(struct data* elements[], size_t size) {
-    qsort(elements, size, 4, compare);
+    qsort(elements, size, sizeof(struct data*), compare);
 }
 
 /*

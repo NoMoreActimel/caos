@@ -1,0 +1,56 @@
+#include <stdbool.h>
+#include <stdlib.h>
+
+// node->data == &smth_used => 
+// => node has corresponding children
+bool no_parent;
+bool left_child;
+bool right_child;
+
+typedef struct dag_node {
+    struct dag_node *left, *right;
+    void *data;
+} dag_node;
+
+// char_type: 0 - no_parent, 1 - left_parent, 2 - right_parent
+void initial_dfs(struct dag_node* node, char child_type) {
+	if (!node) {
+		return;
+	}
+
+	if (node->data == &left_child || node->data == &right_child) {
+		return;
+	}
+
+	if (child_type == 1) {
+		node->data = &left_child;
+	} else if (child_type == 2) {
+		node->data = &right_child;
+	} else {
+		node->data = &no_parent;
+	}
+
+	initial_dfs(node->left, 1);
+	initial_dfs(node->right, 2);
+}
+
+void delete_dfs(struct dag_node* node) {
+	if (node->left && node->left->data == &left_child) {
+		delete_dfs(node->left);
+	}
+	if (node->right && node->right->data == &right_child) {
+		delete_dfs(node->right);
+	}
+
+	free(node);
+}
+
+
+void free_dag(struct dag_node* root) {
+	if (!root) {
+		return;
+	}
+
+	initial_dfs(root, 0);
+	delete_dfs(root);
+}

@@ -1,55 +1,65 @@
-#include <stdlib.h>
 #include <stdbool.h>
+#include <stdio.h>
+#include <stdlib.h>
 
-typedef struct Node {
-	void* dagnode;
-	int ref_count;
-} Node;
+typedef struct dag_node {
+    struct dag_node *left, *right;
+    void *data;
+} dag_node;
 
-void freeList(Node* node) {
-    if (!node) {
-        return;
-    }
+typedef struct node {
+	struct dag_node *dn;
+	struct node* next;
+} node;
 
-    if (node->next) {
-        freeList(node->next);
-    }
+bool visited;
+node* list_end;
 
-    free(node->token);
-    free(node);
+void addNode(struct node* list_end, struct dag_node* dn) {
+	list_end->next = malloc(sizeof(node));
+	if (!list_end->next) {
+		fprintf(stderr, "memory allocation problem\n");
+		return;
+	}
+
+	list_end->next->dn = dn;
+	list_end->next->next = NULL;
 }
 
-Node* addNodeToList(Node* head, void* dagnode) {
-	Node* new_node = malloc(sizeof(Node));
-	if (!new_node) {
-		return NULL;
+void dfs(struct dag_node* dn) {
+	if (!dn || dn->data == &visited) {
+		return;
 	}
 
-	new_node->dagnode = dagnode;
-	new_node->next = head;
-	return new_node;
+	dn->data = &visited;
+	addNode(list_end, dn);
+	list_end = list_end->next;
+	dfs(dn->left);
+	dfs(dn->right);
 }
 
-Node* findNodeInList(Node* node, void* dagnode) {
-	if (!node) {
-		return NULL;
-	}
-	
-	if (node->dagnode == dagnode) {
-		return node;
+void free_daglist(struct node* list_node) {
+	if (!list_node) {
+		return;
 	}
 
-	Node* left_ans = findNodeInList(node->left, dagnode);
-	if (left_ans) {
-		return left_ans;
-	}
-	return findNodeInList(node->right, dagnode);
-}
-
-Node* makeNodeList(struct dag_node* root) {
-	Node* 
+	free_daglist(list_node->next);
+	free(list_node->dn);
+	free(list_node);
 }
 
 void free_dag(struct dag_node* root) {
-	Node* list_head = makeNodeList(root);
+	if (!root) {
+		return;
+	}
+
+	list_end = malloc(sizeof(node));
+	list_end->dn = NULL;
+	list_end->next = NULL;
+	node* list_head = list_end;
+
+	dfs(root);
+	free_daglist(list_head->next);
+
+	free(list_head);
 }
