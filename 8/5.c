@@ -14,6 +14,7 @@ typedef struct FunctionTable {
 } FunctionTable;
 
 
+
 const static FunctionTable functions [] = {
     {"sin", sin},
     {"cos", cos},
@@ -26,9 +27,9 @@ const static FunctionTable functions [] = {
 
 int main() {
     double x = 0;
-    char* name = malloc(10 * sizeof(char));
+    char* name = NULL;
 
-    while (scanf("%s %lf", name, &x) == 2) {
+    while (scanf("%ms %lf", &name, &x) == 2) {
         int func_ind = -1;;
         for (int i = 0; i != sizeof(functions) / sizeof(FunctionTable); ++i) {
             if (strcmp(functions[i].name, name) == 0) {
@@ -42,7 +43,7 @@ int main() {
         } else {
             printf("%a\n", functions[func_ind].func(x));
         }
+        free(name);
     }
 
-    free(name);
 }

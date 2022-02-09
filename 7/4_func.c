@@ -1,7 +1,5 @@
 #include <inttypes.h>
 #include <stdbool.h>
-#include <stdio.h>
-#include <stdlib.h>
 
 bool ith_bit(uint64_t a, int i) {
     return (a >> i) & 1;

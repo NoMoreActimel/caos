@@ -2,7 +2,6 @@
 #include <inttypes.h>
 #include <stdbool.h>
 #include <stdio.h>
-#include <stdlib.h>
 
 void bitwise_print(int64_t a) {
     for (int i = 63; i != -1; --i) {

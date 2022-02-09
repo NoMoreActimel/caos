@@ -22,6 +22,9 @@ Node* initList() {
 
 Node* initList(int value, int count) {
     Node* head = malloc(sizeof(Node));
+    if (!head) {
+        return NULL;
+    }
     head->value = value;
     head->count = count;
     head->next = NULL;
@@ -34,6 +37,9 @@ Node* addNodeToHead(Node* head, int value, int count) {
 		return initList(value, count);
 	}
 	Node* new_head = initList(value, count);
+    if (!new_head) {
+        return NULL;
+    }
     new_head->next = head;
     head->prev = new_head;
     return new_head;
