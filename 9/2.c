@@ -1,6 +1,5 @@
 #include <sys/syscall.h>
 
-
 void _start() {
     char* str = "hello world\n";
     asm volatile (

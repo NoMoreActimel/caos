@@ -1,34 +1,44 @@
-    .global myhypot
-myhypot:
+    .global myexp
+myexp:
     push %ebp
     mov %esp, %ebp
 
-    xorps %xmm0, %xmm0
+    // 4(ebp) + 4(func call) + 8(x) + 4(r*)
 
-    mov 8(%esp), %eax
-    cmp $0, %eax
+    movsd one, %xmm0
+    // cur sum in %xmm0
+    movsd one, %xmm1
+    // prev sum in %xmm1
+    movsd one, %xmm2
+    // x^n in %xmm2    
+    movsd 8(%esp), %xmm3
+    // x in %xmm3
+    movsd zero, %xmm4 
+    // n in %xmm4
+    movsd one, %xmm5
+    // n! in %xmm5
+    mov 16(%esp), %eax
+    // r in %eax
 
-    // answer in %edx
+loop:
+    addsd one, %xmm4
+    mulsd %xmm4, %xmm5
+    mulsd %xmm3, %xmm2
 
+    movsd %xmm2, %xmm6
+    divsd %xmm5, %xmm6
+    // x^n / n in %xmm6
 
-    // 4(ebp) + 4(func call) + 4(n) + 4n(x) + 4n(y) + 4(res)
-    movupd 8(%esp), %xmm0
-    mov 24(%esp), %eax
+    addsd %xmm6, %xmm0
 
-    mulpd %xmm0, %xmm0
-    haddpd %xmm0, %xmm0
-    sqrtsd %xmm0, %xmm0
+    comisd %xmm1, %xmm0
+    jz exit
 
-    movsd %xmm0, (%eax)
-
-tail:
-
-
-
-zero_exit:
-    mov %eax, 12(%esp)
+    movsd %xmm0, %xmm1
+    jmp loop
 
 exit:
+    movsd %xmm0, (%eax)
     mov %ebp, %esp
     pop %ebp
     ret
@@ -36,3 +46,5 @@ exit:
     .data
 zero:
     .double 0
+one:
+    .double 1

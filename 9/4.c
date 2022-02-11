@@ -1,15 +1,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-void dot_product(int, const float*, const float*, float*);
+void myexp(double, double*);
 
 int main() {
-    int n = 5;
-    float* x = malloc(n * sizeof(float));
-    float* y = malloc(n * sizeof(float));
-    float* res = malloc(sizeof(float));
+    double x = 0.5;
+    double* res = malloc(sizeof(double));
 
-    dot_product(n, x, y, res);
-
+    myexp(x, res);
     printf("%f\n", *res);
 }
