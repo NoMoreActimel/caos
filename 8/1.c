@@ -1,5 +1,5 @@
-#pragma once
-#include "1.h"
+// #pragma once
+// #include "1.h"
 #include <stdbool.h>
 #include <stdint.h>
 
@@ -8,11 +8,10 @@ union ufloat {
     uint32_t u;
 };
 
-enum Size {float_exp = 31, float_mantissa = 23};
-enum Size sz_;
+enum Constants {exp_ind = 23, sign_ind = 31};
 
 bool overflow_check(uint32_t float_value) {
-    for (int i = sz_.float_mantissa; i != sz_.float_exp; ++i) {
+    for (int i = exp_ind; i != sign_ind; ++i) {
         if (!((float_value >> i) & 1)) {
             return false;
         }
@@ -21,7 +20,7 @@ bool overflow_check(uint32_t float_value) {
 }
 
 bool nan_check(uint32_t float_value) {
-    for (int i = 0; i != sz_.float_mantissa; ++i) {
+    for (int i = 0; i != exp_ind; ++i) {
         if ((float_value >> i) & 1) {
             return true;
         }
@@ -30,7 +29,7 @@ bool nan_check(uint32_t float_value) {
 }
 
 bool denormalized_check(uint32_t float_value) {
-    for (int i = sz_.float_mantissa; i != sz_.flaot_exp; ++i) {
+    for (int i = exp_ind; i != sign_ind; ++i) {
         if ((float_value >> i) & 1) {
             return false;
         }
@@ -42,7 +41,7 @@ bool denormalized_check(uint32_t float_value) {
 FPClass fpclassf(float value, int *psign) {
     union ufloat value_bits = {.f = value };
     FPClass value_type;
-    *psign = value_bits.u >> (sz_.float_exp);
+    *psign = value_bits.u >> sign_ind;
 
     if (value == 0) {
         value_type = FFP_ZERO;

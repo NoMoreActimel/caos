@@ -1,0 +1,5 @@
+2:
+cast to dqword
+*2^32
+cast back to double
+
