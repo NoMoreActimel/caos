@@ -5,19 +5,10 @@
 void print_parent_arg() {
     uint32_t u;
     asm volatile (
-        "mov 20(%%esp), %%ecx\n\t"
-        "mov %%ecx, %0\n\t"
-        : "=m"(u)
+        "mov (%%ebp), %%ecx\n\t"
+        "mov 8(%%ecx), %%eax\n\t"
+        : "=a"(u)
         :
         : "ecx"); 
     printf("%x\n", u);
-}
-
-void calling_fun(int x) {
-    print_parent_arg();
-}
-
-
-int main() {
-    calling_fun(2);
 }
