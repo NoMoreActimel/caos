@@ -8,10 +8,10 @@ union ufloat {
     uint32_t u;
 };
 
-enum Constants {exp_ind = 23, sign_ind = 31};
+enum Constants {EXP_IND = 23, SIGN_IND = 31};
 
 bool overflow_check(uint32_t float_value) {
-    for (int i = exp_ind; i != sign_ind; ++i) {
+    for (int i = EXP_IND; i != SIGN_IND; ++i) {
         if (!((float_value >> i) & 1)) {
             return false;
         }
@@ -20,7 +20,7 @@ bool overflow_check(uint32_t float_value) {
 }
 
 bool nan_check(uint32_t float_value) {
-    for (int i = 0; i != exp_ind; ++i) {
+    for (int i = 0; i != EXP_IND; ++i) {
         if ((float_value >> i) & 1) {
             return true;
         }
@@ -29,7 +29,7 @@ bool nan_check(uint32_t float_value) {
 }
 
 bool denormalized_check(uint32_t float_value) {
-    for (int i = exp_ind; i != sign_ind; ++i) {
+    for (int i = EXP_IND; i != SIGN_IND; ++i) {
         if ((float_value >> i) & 1) {
             return false;
         }
@@ -41,7 +41,7 @@ bool denormalized_check(uint32_t float_value) {
 FPClass fpclassf(float value, int *psign) {
     union ufloat value_bits = {.f = value };
     FPClass value_type;
-    *psign = value_bits.u >> sign_ind;
+    *psign = value_bits.u >> SIGN_IND;
 
     if (value == 0) {
         value_type = FFP_ZERO;

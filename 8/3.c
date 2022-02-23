@@ -2,7 +2,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-enum Constants {exp_ind = 23, sign_ind = 31};
+enum Constants {EXP_IND = 23, SIGN_IND = 31};
 
 union ufloat {
     float f;
@@ -18,14 +18,14 @@ union ufloat {
 bool no_integer_rounding(uint32_t value) {
     int max_bit = 0;
 
-    for (int i = sign_ind; i != -1; --i) {
+    for (int i = SIGN_IND; i != -1; --i) {
         if ((value >> i) & 1) {
             max_bit = i;
             break;
         }
     }
 
-    for (int i = 0; i < max_bit - exp_ind; ++i) {
+    for (int i = 0; i < max_bit - EXP_IND; ++i) {
         if ((value >> i) & 1) {
             return false;
         }
