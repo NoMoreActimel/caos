@@ -2,9 +2,17 @@
 #include <stdint.h>
 // #include <stdio.h>
 
+enum { 
+    MAN_SZ = 10,
+    EXP_SZ = 5,
+    SIGN_SZ = 1,
+    MAX_EXP = 30,
+    MAX_MAN = 1023
+};
+
 
 bool overflow_check(uint16_t float_value) {
-    for (int i = 10; i != 15; ++i) {
+    for (int i = MAN_SZ; i != MAN_SZ + EXP_SZ; ++i) {
         if (!((float_value >> i) & 1)) {
             return false;
         }
@@ -13,14 +21,14 @@ bool overflow_check(uint16_t float_value) {
 }
 
 int16_t f_exp(uint16_t f) {
-    f <<= 1;
-    f >>= 11;
+    f <<= SIGN_SZ;
+    f >>= MAN_SZ + SIGN_SZ;
     return f;
 }
 
 uint16_t f_man(uint16_t f) {
-    f <<= 6;
-    f >>= 6;
+    f <<= EXP_SZ + SIGN_SZ;
+    f >>= EXP_SZ + SIGN_SZ;
     return f;
 }
 
@@ -37,22 +45,22 @@ uint16_t sat_mul4_half(uint16_t f) {
         if (man == 0) {
             return f;
         } else {
-            if (man >= (1 << 9)) {
-                man -= 1 << 9;
-                return ((f >> 15) << 15) + (2 << 10) + (man << 1); 
-            } else if (man >= (1 << 8)) {
-                man -= 1 << 8;
-                return ((f >> 15) << 15) + (1 << 10) + (man << 2);
+            if (man >= (1 << (MAN_SZ - 1))) {
+                man -= 1 << (MAN_SZ - 1);
+                return ((f >> (MAN_SZ + EXP_SZ)) << (MAN_SZ + EXP_SZ)) + (2 << MAN_SZ) + (man << 1); 
+            } else if (man >= (1 << (MAN_SZ - 2))) {
+                man -= 1 << (MAN_SZ - 2);
+                return ((f >> (MAN_SZ + EXP_SZ)) << (MAN_SZ + EXP_SZ)) + (1 << MAN_SZ) + (man << 2);
             } else {
-                return ((f >> 15) << 15) + (man << 2);
+                return ((f >> (MAN_SZ + EXP_SZ)) << (MAN_SZ + EXP_SZ)) + (man << 2);
             }
         }
-    } else if (exp < 29) {
-        return ((f >> 15) << 15) + ((exp + 2) << 10) + man;
+    } else if (exp < MAX_EXP - 1) {
+        return ((f >> (MAN_SZ + EXP_SZ)) << (MAN_SZ + EXP_SZ)) + ((exp + 2) << MAN_SZ) + man;
     }
 
-    exp = 30;
-    return (exp << 10) + 1023 + ((f >> 15) << 15);
+    exp = MAX_EXP;
+    return (exp << MAN_SZ) + MAX_MAN + ((f >> (MAN_SZ + EXP_SZ)) << (MAN_SZ + EXP_SZ));
 }
 
 // 2^(-14) * 0.1 -> 2^(-13)

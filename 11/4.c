@@ -16,7 +16,7 @@ int main() {
 			return 1;
 		} else {
 			wait(&status);
-			if (WEXITSTATUS(status) == 1) {
+			if (WIFEXITED(status) && WEXITSTATUS(status) == 1) {
 				if (child_process) {
 					return 1;
 				} else {
