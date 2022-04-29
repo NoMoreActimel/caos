@@ -1,4 +1,4 @@
-#include <sys/syscall.h>
+    #include <sys/syscall.h>
 
 void _start() {
     char str[] = "hello world\n";
@@ -14,6 +14,6 @@ void _start() {
         "mov $1, %%eax\n\t"
         "int $0x80\n\t"
         :
-        : "m"(str), "m"(str_sz)
-        : "eax", "ebx", "ecx", "edx", "memory" );
+        : "c"(str), "d"(str_sz)
+        : "memory" );
 }
