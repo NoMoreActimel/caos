@@ -13,7 +13,7 @@ run_on_stack:
 	// mov %edx, (%eax)
 
 	mov %eax, %esp
-	call *(%edx)
+	call *%edx
 
 	mov %ebp, %esp
 	pop %ebp

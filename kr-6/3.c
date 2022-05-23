@@ -9,20 +9,30 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 
-void throw_error() {
-    printf("incorrect input\n");
+void throw_error(char* str) {
+    printf("%s\n", str);
     exit(1);
 }
 
-bool starts_with_prefix(char* name, char* prefix) {
-    if (strlen(name) < strlen(prefix)) {
-        return false;
+bool starts_with_prefix(char* path, char* prefix) {
+    // printf("%s\n%s\n", path, prefix);
+    FILE* fptr = fopen(path, "r");
+    if (fptr == NULL) {
+        throw_error("can't open file");
     }
 
-    for (int i = 0; i != strlen(prefix); ++i) {
-        if (name[i] != prefix[i]) {
+    int i = 0;
+    int n = strlen(prefix);
+    char c;
+    while (((c = fgetc(fptr)) != EOF) && (i != n)) {
+        if (c != prefix[i]) {
             return false;
         }
+        ++i;
+    }
+
+    if (i != n) {
+        return false;
     }
 
     return true;
@@ -30,14 +40,14 @@ bool starts_with_prefix(char* name, char* prefix) {
 
 
 int main(int argc, char** argv) {
-    if (argc < 3) {
-        throw_error();
+    if (argc != 3) {
+        throw_error("incorrect input");
     }
 
     DIR* dir = opendir(argv[1]);
     char* prefix = argv[2];
     if (!dir) {
-        throw_error();
+        throw_error("can't open directory");
     }
 
     struct dirent* ent;
@@ -49,13 +59,18 @@ int main(int argc, char** argv) {
 
         struct stat s;
         stat(child_path, &s);
-        if (S_ISREG(s.st_mode   ) && starts_with_prefix(child_name, prefix)) {
+        if (S_ISREG(s.st_mode) && starts_with_prefix(child_path, prefix)) {
+            bool is_empty = true;
             for (int i = 0; i != strlen(child_name); ++i) {
                 if (child_name[i] != '\0') {
                     printf("%c", child_name[i]);
+                    is_empty = false;
                 }
             }
-            printf("\n");
+
+            if (!is_empty) {
+                printf("\n");
+            }
         }
 
         free(child_path);

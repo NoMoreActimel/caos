@@ -4,55 +4,72 @@
 
 enum Constants {EXP_IND = 23, SIGN_IND = 31};
 
+// x = s * ((2^(23) + m) * 2^(-23)) * 2^(e - 127)
+// p = e - 127
+// |x| = (1 + (m >> 23)) << p
+// |x| = ((1 << 23) + m) << (e - 150)
+// |x| = (1 << (e - 127)) + sum m[i] << (e + i - 150)
+// e < 127 ? e_r = 0 : e_r = e
+// e_r = 0 ? m_r = 0 : m_r[i] = m[i] while e + i - 150 >= 0
+
 union ufloat {
     float f;
     uint32_t u;
 };
 
+bool ith_bit(uint32_t x, int i) {
+    return (x >> i) & 1;
+}
 
-// value - посмотреть расположение битов в зависимости от старшей 1
-// расстояние от старшей 1 = расстояние от левого края мантиссы
-// то есть для 2^20 + 2^3 расстояние от левого края мантиссы = 16 
-// если это расстояние >= 23 для какого-то единичного бита, то точным образом число не представимо
-// то есть если maxbit - i > 23, то неточно
-
-bool no_integer_rounding(uint32_t value) {
-    int max_bit = 0;
-
-    for (int i = SIGN_IND; i != -1; --i) {
-        if ((value >> i) & 1) {
-            max_bit = i;
-            break;
+void bitwise_print(uint32_t x) {
+    for (int i = 31; i != -1; --i) {
+        printf("%d", ith_bit(x, i));
+        if (i % 4 == 0) {
+            printf(" ");
         }
     }
-
-    for (int i = 0; i < max_bit - EXP_IND; ++i) {
-        if ((value >> i) & 1) {
-            return false;
-        }
-    }
-    return true;
+    printf("\n");
 }
 
 void myfloorf(float *arg) {
     union ufloat uf;
     uf.f = *arg;
 
-    printf("%d\n", uf.u);
+    int32_t e = (uf.u << 1) >> (EXP_IND + 1);
+    int32_t m = (uf.u << (32 - EXP_IND)) >> (32 - EXP_IND);
+    // printf("value = %d:\n", uf.u);
+    // bitwise_print(uf.u);
+    // printf("e = %d:\n", e);
+    // bitwise_print(e);
+    // printf("m = %d:\n", m);
+    // bitwise_print(m);
 
-    while (no_integer_rounding(uf.u)) {
-        uf.u--;
+    union ufloat uf_rounded;
+    if (e < 127) {
+        uf_rounded.u = 0;
+        *arg = uf_rounded.f;
+        return;
+    } else if (e >= 150) {
+        return;
     }
 
-    printf("%d\n", uf.u);
+    uf_rounded.u = (uf.u >> EXP_IND) << EXP_IND;
+    for (int i = 150 - e; i < EXP_IND; ++i) {
+        if (ith_bit(m, i)) {
+            // printf("%d\n", e + i - 150);
+            uf_rounded.u += (1 << i);
+        }
+    }
 
-    *arg = uf.f;
+    // printf("rounded = %d:\n", uf_rounded.u);
+    // bitwise_print(uf_rounded.u);    
+
+    *arg = uf_rounded.f;
 }
 
-// 1 11111111 11111111111111111111111
-
+/*
 int main() {
     float f = 1.5;
     myfloorf(&f);
     printf("%f\n", f);
-}
+}*/
